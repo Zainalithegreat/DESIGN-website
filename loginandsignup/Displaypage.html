@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #menu-btn {
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidebar a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidebar-close-btn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #cart {
+            border: 1px solid #333;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        #cart-page {
+            display: none;
+        }
+
+        #cart-items {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .cart-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .remove-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #customization-page {
+            display: none;
+        }
+
+        #customization-options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .customization-option {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <span id="menu-btn" onclick="toggleSidebar()">&#9776;</span>
+        <h1>Welcome to Our Online Store</h1>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="sidebar-close-btn" onclick="toggleSidebar()">&times;</a>
+        <a href="#" onclick="openCartPage()">Cart</a>
+        <a href="#" onclick="openCustomizationPage()">Customization</a>
+        <a href="#" onclick="openStylesPage()">Styles</a>
+    </div>
+
+    <!-- Content -->
+    <div id="content" style="margin-left: 60px; padding: 20px;">
+
+        <!-- Items -->
+        <div class="item" onclick="addItem('Tshirt 1', 20)">
+            <h2>Tshirt 1</h2>
+            <p>$20</p>
+        </div>
+
+        <div class="item" onclick="addItem('Tshirt 2', 25)">
+            <h2>Tshirt 2</h2>
+            <p>$25</p>
+        </div>
+
+        <div class="item" onclick="addItem('Tshirt 3', 18)">
+            <h2>Tshirt 3</h2>
+            <p>$18</p>
+        </div>
+
+        <div class="item" onclick="addItem('Special Tshirt', 30)">
+            <h2>Special Tshirt</h2>
+            <p>$30</p>
+        </div>
+
+    </div>
+
+    <!-- Cart Page -->
+    <div id="cart-page">
+        <h2>Shopping Cart</h2>
+        <ul id="cart-items"></ul>
+        <p>Total: $<span id="cart-total">0</span></p>
+    </div>
+
+    <!-- Customization Page -->
+    <div id="customization-page">
+        <h2>Customization Options</h2>
+        <ul id="customization-options">
+            <li class="customization-option" onclick="customizeItem('Tshirt 1', 'Option 1')">Option 1</li>
+            <li class="customization-option" onclick="customizeItem('Tshirt 1', 'Option 2')">Option 2</li>
+            <li class="customization-option" onclick="customizeItem('Tshirt 2', 'Option A')">Option A</li>
+            <li class="customization-option" onclick="customizeItem('Tshirt 2', 'Option B')">Option B</li>
+            <!-- Add more customization options here -->
+        </ul>
+    </div>
+
+    <script>
+        let cart = [];
+        let total = 0;
+
+        function addItem(name, price) {
+            cart.push({ name, price, customization: '' });
+            total += price;
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItemsElement = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+            if (cartItemsElement) {
+                cartItemsElement.innerHTML = '';
+                cart.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.classList.add('cart-item');
+                    li.textContent = `${item.name} - $${item.price} - ${item.customization}`;
+                    
+                    // Add a remove button
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.classList.add('remove-btn');
+                    removeBtn.onclick = () => removeItem(index);
+                    li.appendChild(removeBtn);
+
+                    cartItemsElement.appendChild(li);
+                });
+                cartTotalElement.textContent = total;
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
+        }
+
+        function openCartPage() {
+            const cartPage = document.getElementById('cart-page');
+            cartPage.style.display = 'block';
+            updateCart(); // Update cart when opening the cart page
+        }
+
+        function openCustomizationPage() {
+            const customizationPage = document.getElementById('customization-page');
+            customizationPage.style.display = 'block';
+        }
+
+        function openStylesPage() {
+            alert('Opening Styles Page');
+            // You can add code to navigate to the styles page here
+        }
+
+        function removeItem(index) {
+            total -= cart[index].price;
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function customizeItem(name, option) {
+            const selectedItem = cart.find(item => item.name === name);
+            if (selectedItem) {
+                selectedItem.customization = option;
+                updateCart();
+            }
+        }
+    </script>
+
+</body>
+</html>
