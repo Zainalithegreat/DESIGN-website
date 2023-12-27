@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Upload</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        text-align: center;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+      }
+
+      #imageInput {
+        display: none;
+      }
+
+      .custom-file-upload {
+        display: inline-block;
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: white;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+
+      .custom-file-upload:hover {
+        background-color: #45a049;
+      }
+
+      #statusMessage {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+
+      .uploaded-image {
+        margin-top: 30px;
+        max-width: 500px;
+        max-height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Image Upload</h2>
+      <label for="imageInput" class="custom-file-upload">Select Image</label>
+      <input type="file" id="imageInput" accept="image/jpeg" required />
+      <button onclick="uploadImage()" class="custom-file-upload">Upload</button>
+      <p id="statusMessage"></p>
+    </div>
+
+    <script>
+        function uploadImage() {
+          const fileInput = document.getElementById('imageInput');
+          const file = fileInput.files[0];
+    
+          if (!file) {
+            setStatusMessage('Please select an image.');
+            return;
+          }
+    
+          if (!file.type.startsWith('image/jpeg')) {
+            setStatusMessage('Only JPEG files are allowed.');
+            return;
+          }
+    
+          const formData = new FormData();
+          formData.append('image', file);
+    
+          const request = new XMLHttpRequest();
+          request.open('POST', 'http://127.0.0.1:5000/'); // Replace 'upload.php' with the URL of your server-side script
+          request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE) {
+              if (request.status === 200) {
+                setStatusMessage('Image uploaded successfully.');
+              } else {
+                setStatusMessage('Error uploading the image.');
+              }
+            }
+          };
+          request.send(formData);
+        }
+    
+        function setStatusMessage(message) {
+          document.getElementById('statusMessage').textContent = message;
+        }
+      </script>
+    
+    </script>
+  </body>
+</html>
